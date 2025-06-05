@@ -4,13 +4,87 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
 
-};
+}
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	CursorTrace();
 
+}
+;
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
+
+	LastActor = ThisActor;
+	ThisActor = CursorHit.GetActor();
+	
+	/**
+	*Line trace from cursor
+	* A) Last actor is null, and current actor is null
+	* Do nothing
+	* 
+	* B) lastactor is null
+	* This actor is valid
+	* Call higlight since its new enemy
+	* 
+	* C) last actor is valid and this actor is null
+	* unhighlight last actor
+	* 
+	* D) both actors valid, last actor != this actor
+	* unhighlight last actor and highlight this actor
+	* 
+	* E) both actor are valid and same actor
+	* do nothing
+	*/
+	if (LastActor == nullptr)
+	{
+		if (ThisActor != nullptr)
+		{
+			//Case B
+			ThisActor->HighLightActor();
+		}
+		else
+		{
+			//Case A
+			//Do nothing
+		}
+
+	}
+	//LastActor is valid
+	else 
+	{
+		if (ThisActor == nullptr)
+		{
+			LastActor->UnHighLightActor();
+		}
+		else
+			//Both are Valid
+		{
+			if(LastActor != ThisActor)
+			{
+				//Case D
+				LastActor->UnHighLightActor();
+				ThisActor->HighLightActor();
+			}
+			else 
+			{
+				//Case E
+			}
+		}
+
+	}
+
+}
+;
 void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -54,4 +128,4 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 
-};
+}
