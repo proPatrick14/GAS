@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AuraCharacterBase.generated.h"
 
 UCLASS(Abstract)
@@ -19,4 +20,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(Edit Anywhere)
+	TObjectPtr<UAbilitySystemComponent>
+
 };
